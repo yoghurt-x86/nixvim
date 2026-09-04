@@ -1,20 +1,4 @@
-# Nixvim template
-
-This template gives you a good starting point for configuring nixvim standalone.
-
-## Configuring
-
-To start configuring, just add or modify the nix files in `./config`.
-If you add a new configuration file, remember to add it to the
-[`config/default.nix`](./config/default.nix) file
-
-## Testing your new configuration
-
-To test your configuration simply run the following command
-
-```
-nix run .
-```
+# Nixvim 
 
 ## Try it
 
@@ -23,3 +7,12 @@ You can also run this configuration directly from GitHub without cloning:
 ```
 nix run github:yoghurt-x86/nixvim
 ```
+
+## AI assistant (avante.nvim)
+
+On macOS, avante is configured to use a local [LM Studio](https://lmstudio.ai)
+server instead of a cloud provider. Before opening nvim, make sure LM Studio
+is running with the **`ornith-1.5-35b-a3b-mlx`** model loaded and its local
+server started (default: `http://127.0.0.1:1234`). On Linux, avante falls
+back to the Claude provider instead.
+
