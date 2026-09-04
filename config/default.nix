@@ -1,4 +1,7 @@
-{pkgs, ...}:
+{
+  pkgs,
+  ...
+}:
 
 {
   globals.mapleader = " ";
@@ -221,12 +224,49 @@
   # AI assistant (Cursor-like experience)
   plugins.avante = {
     enable = true;
+    # Work around a macOS packaging bug: nixpkgs' avante-nvim derivation copies
+    # its native Rust libs with the .dylib extension, but Lua's package.cpath
+    # only searches for .so on all platforms. Without this, any AvanteAsk
+    # errors with "Make sure to build avante (missing avante_templates)".
+    package = pkgs.vimPlugins.avante-nvim.overrideAttrs (old: {
+      postInstall =
+        (old.postInstall or "")
+        + pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+          for f in $out/lua/*.dylib; do
+            ln -sf "$f" "''${f%.dylib}.so"
+          done
+        '';
+    });
     settings = {
-      provider = "claude";
-      claude = {
-        model = "claude-haiku-3-5-20241022";
-        max_tokens = 4096;
-      };
+      # LM Studio only runs locally on the macOS machine; fall back to Claude
+      # elsewhere (e.g. Linux) so this config stays portable.
+      provider =
+        if pkgs.stdenv.hostPlatform.isDarwin
+        then "lmstudio"
+        else "claude";
+      providers =
+        {
+          claude = {
+            model = "claude-haiku-3-5-20241022";
+            extra_request_body = {
+              max_tokens = 4096;
+            };
+          };
+        }
+        // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+          # Local LM Studio server (OpenAI-compatible API), matching
+          # ~/.config/opencode/opencode.jsonc
+          lmstudio = {
+            __inherited_from = "openai";
+            endpoint = "http://127.0.0.1:1234/v1";
+            model = "ornith-1.5-35b-a3b-mlx";
+            api_key_name = ""; # no auth needed for local server
+            extra_request_body = {
+              temperature = 0.75;
+              max_tokens = 16384;
+            };
+          };
+        };
     };
   };
 
