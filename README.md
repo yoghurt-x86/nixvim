@@ -15,3 +15,11 @@ To test your configuration simply run the following command
 ```
 nix run .
 ```
+
+## Try it
+
+You can also run this configuration directly from GitHub without cloning:
+
+```
+nix run github:yoghurt-x86/nixvim
+```
