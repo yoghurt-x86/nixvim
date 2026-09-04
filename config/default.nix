@@ -86,10 +86,12 @@
   plugins.nvim-tree = {
       enable = true;
       openOnSetup = true;
-      actions.openFile.resizeWindow = false;
-      updateFocusedFile = {
-        enable = true;
-        updateRoot = false;
+      settings = {
+        actions.open_file.resize_window = false;
+        update_focused_file = {
+          enable = true;
+          update_root = false;
+        };
       };
   };
 
